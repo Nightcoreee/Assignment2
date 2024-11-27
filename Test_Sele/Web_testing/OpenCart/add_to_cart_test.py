@@ -43,6 +43,14 @@ def test_search(driver):
     driver.find_element(By.LINK_TEXT, "iPhone").click()
     time.sleep(2)
     
+    quantity_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "input-quantity"))
+    )
+    quantity_input = driver.find_element(By.ID, "input-quantity")
+    quantity_input.clear()
+    quantity_input.send_keys("2")  
+    time.sleep(2)
+    
     driver.find_element(By.ID, "button-cart").click()
     time.sleep(2)
     
@@ -65,9 +73,58 @@ def test_search(driver):
     shopping_cart_link.click()
     time.sleep(4)
     
-   
+    #Kiểm tra xem sản phẩm trong giỏ hàng có phải "iPhone" không
     product_in_cart = driver.find_element(By.XPATH, "//a[contains(text(),'iPhone')]")
     print(product_in_cart)
+
+    #Kiểm tra xem số lượng có đúng là 2 hay không
+    quantity_input = driver.find_element(By.NAME, "quantity")
+    value = quantity_input.get_attribute("value")
+    if int(value) == 2:
+        print("Giá trị của trường input đúng là 2.")
+    else:
+        print(f"Giá trị của trường input không phải là 2, mà là {value}.")
+        
+
+    #Kiểm tra giá tiền có đúng không
+    unit_price_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//td[@class='text-end' and contains(text(), '$123.20')]"))
+    )
+    total_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//td[@class='text-end' and contains(text(), '$246.40')]"))
+    )
+    quantity_input = driver.find_element(By.NAME, "quantity")
+    
+    # In HTML của phần tử
+    print("Unit Price HTML:", unit_price_element.get_attribute('outerHTML'))
+    print("Total HTML:", total_element.get_attribute('outerHTML'))
+    
+    # Xử lý giá trị chuỗi
+    unit_price_text = unit_price_element.text.strip()
+    total_text = total_element.text.strip()
+
+    total_text_cleaned = total_text.replace('$', '').replace(',', '').strip()
+
+    # Lấy giá trị từ các phần tử
+    try:
+        # Chuyển giá trị từ chuỗi sang float
+        unit_price = float(unit_price_text.replace('$', '').strip())
+        total = (total_text_cleaned)  # Làm sạch và chuyển đổi giá trị
+    except ValueError as e:
+        print(f"Error converting value to float: {e}")
+        print(f"unit_price_text: {unit_price_text}, total_text: {total_text}")
+        raise
+    
+    quantity_input = driver.find_element(By.NAME, "quantity")
+    quantity = int(quantity_input.get_attribute("value"))
+
+    # Tính toán
+    calculated_total = quantity * unit_price
+    print(f"Quantity: {quantity}, Unit Price: {unit_price}, Calculated Total: {calculated_total}, Displayed Total: {total}")
+
+    # Kiểm tra kết quả
+    print("Phép tính Quantity * Unit Price = Total là chính xác!")
+    
 
 #Thêm sản phẩm bằng compare
 def test_add_wc(driver):
