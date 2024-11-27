@@ -189,16 +189,15 @@ def test_fill_pass(driver):
         checkbox_privacy.click()
     assert checkbox_privacy.is_selected() == True, "Checkbox chưa được chọn"
     
+    continue_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    continue_button.click()
+    
     error_message_pass = WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.ID, "error-password"))
     )
     assert error_message_pass.is_displayed(), "Error message for First Name is not displayed"
     assert "Password must be between 4 and 20 characters!" in error_message_pass.text, \
-        f"Expected error message, but got: {error_message_pass.text}"
-        
-    continue_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
-    continue_button.click()
-    
+        f"Expected error message, but got: {error_message_pass.text}" 
     time.sleep(3)
     
 #Trường hợp nhập tài khoản đã đăng ký
